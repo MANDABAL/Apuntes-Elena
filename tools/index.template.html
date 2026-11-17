@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f8f4">
+<title>Apuntes en mi letra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Una hoja de cuaderno de cuadrícula: margen rojo a la izquierda, tinta azul oscura, fosforito amarillo. */
+  --paper: #f7f8f4;
+  --grid: rgba(70, 120, 190, .13);
+  --margin: rgba(214, 72, 72, .45);
+  --ink: #1d2350;
+  --ink-soft: #5a6086;
+  --marker: #f4e94a;
+  --btn: #24307a;
+  --btn-ink: #ffffff;
+  --btn-edge: #141b4d;
+  --err: #b8322a;
+  --ok: #1f6d4a;
+  --body: "Familjen Grotesk", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --hand: "Letra", var(--body);
+  --cell: 22px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12162a; --grid: rgba(140, 170, 255, .08); --margin: rgba(255, 110, 110, .35);
+    --ink: #e9ecf8; --ink-soft: #a2a8c8; --marker: #c9b92a; --btn: #f4e94a; --btn-ink: #12162a; --btn-edge: #a69a1c;
+    --err: #ff8a80; --ok: #7fdcae; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12162a; --grid: rgba(140, 170, 255, .08); --margin: rgba(255, 110, 110, .35);
+  --ink: #e9ecf8; --ink-soft: #a2a8c8; --marker: #c9b92a; --btn: #f4e94a; --btn-ink: #12162a; --btn-edge: #a69a1c;
+  --err: #ff8a80; --ok: #7fdcae; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+#dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+main {
+  position: relative; z-index: 1; max-width: 700px; margin: 0 auto;
+  padding: 44px 22px 70px 58px; display: grid; gap: 34px;
+}
+/* doble línea roja del margen del cuaderno, de arriba abajo de la pantalla */
+body::before {
+  content: ""; position: fixed; top: 0; bottom: 0; left: max(34px, calc(50% - 316px)); width: 5px; z-index: 0; pointer-events: none;
+  border-left: 1.5px solid var(--margin); border-right: 1.5px solid var(--margin); opacity: .9;
+}
+
+/* ---------- título escrito a mano ---------- */
+header { display: grid; gap: 10px; }
+.title-wrap { position: relative; width: min(100%, 560px); }
+#title-svg { display: block; width: 100%; height: auto; overflow: visible; color: var(--ink); position: relative; z-index: 1; }
+#title-svg .g {
+  fill: currentColor; fill-opacity: 0; stroke: currentColor; stroke-width: 14; stroke-linejoin: round;
+  stroke-dasharray: var(--len, 4000); stroke-dashoffset: var(--len, 4000);
+  animation: write .75s cubic-bezier(.6,.1,.3,1) forwards, ink .35s ease-out forwards;
+  animation-delay: calc(var(--i) * 85ms + 150ms), calc(var(--i) * 85ms + 650ms);
+}
+@keyframes write { to { stroke-dashoffset: 0; } }
+@keyframes ink { to { fill-opacity: 1; stroke-width: 0; } }
+.swipe {
+  position: absolute; left: -2%; right: 2%; bottom: 4%; height: 42%; z-index: 0;
+  background: var(--marker); border-radius: 3px 10px 4px 12px / 8px 4px 10px 5px; transform-origin: left center;
+  transform: rotate(-1.2deg) scaleX(0); opacity: .9; animation: swipe .55s cubic-bezier(.7,0,.2,1) forwards 1.9s;
+}
+@keyframes swipe { to { transform: rotate(-1.2deg) scaleX(1); } }
+.lede { margin: 0; max-width: 46ch; color: var(--ink-soft); font-size: 18px; opacity: 0; animation: rise .6s ease forwards 2.2s; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- secciones (sin tarjetas: escritas sobre la hoja) ---------- */
+section { display: grid; gap: 14px; animation: rise .6s ease both; }
+#lock { animation-delay: 2.35s; }
+.step { display: flex; align-items: center; gap: 12px; margin: 0; font-weight: 600; font-size: 21px; letter-spacing: -.01em; }
+.badge { position: relative; width: 46px; height: 46px; flex: none; color: var(--ink); }
+.badge .num { position: absolute; inset: 9px 12px; width: calc(100% - 24px); height: calc(100% - 18px); }
+.badge .num path { fill: currentColor; }
+.badge .ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.badge .ring path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 160; stroke-dashoffset: 160; }
+section:not([hidden]) .badge .ring path { animation: ring .7s ease forwards .25s; }
+@keyframes ring { to { stroke-dashoffset: 0; } }
+.lock-title { font-size: 15px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
+
+/* contraseña: se escribe sobre una línea, como en el cuaderno */
+#lockform { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; }
+#pw {
+  flex: 1 1 240px; min-width: 0; font: inherit; font-size: 22px; color: var(--ink); background: transparent;
+  border: 0; border-bottom: 2px solid var(--ink); padding: 6px 2px; border-radius: 0; letter-spacing: .06em;
+}
+#pw::placeholder { color: var(--ink-soft); opacity: .6; letter-spacing: 0; font-size: 18px; }
+#pw:focus { outline: none; border-bottom-color: var(--btn); box-shadow: 0 6px 0 -3px var(--marker); }
+.check { display: flex; gap: 8px; align-items: center; color: var(--ink-soft); font-size: 15px; }
+.check input { width: 18px; height: 18px; accent-color: var(--btn); }
+#lockmsg { margin: 0; color: var(--err); min-height: 1.4em; font-size: 15px; }
+.shake { animation: shake .35s ease; }
+@keyframes shake { 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
+
+/* botones con tacto de tecla */
+button {
+  font: inherit; font-weight: 600; font-size: 18px; letter-spacing: .01em; cursor: pointer;
+  color: var(--btn-ink); background: var(--btn); border: 0; border-radius: 14px; padding: 13px 24px;
+  box-shadow: 0 4px 0 var(--btn-edge); transform: translateY(0); transition: transform .12s, box-shadow .12s, opacity .2s;
+}
+button:hover { transform: translateY(-1px) rotate(-.6deg); box-shadow: 0 5px 0 var(--btn-edge); }
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--btn-edge); }
+button:disabled { opacity: .6; cursor: progress; transform: none; }
+:focus-visible { outline: 3px solid var(--btn); outline-offset: 3px; }
+
+/* zona para soltar el PDF: un folio con la esquina doblada */
+#drop {
+  position: relative; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center;
+  padding: 22px 22px 22px 20px; cursor: pointer; background: color-mix(in srgb, var(--paper) 82%, transparent);
+  border: 2px dashed color-mix(in srgb, var(--ink) 45%, transparent); border-radius: 6px 18px 6px 6px;
+  transition: transform .2s cubic-bezier(.3,.7,.3,1.4), border-color .2s, box-shadow .2s;
+}
+#drop:hover, #drop.over { transform: translateY(-3px) rotate(-.4deg); border-color: var(--ink); box-shadow: 0 10px 24px -14px rgba(20, 27, 77, .45); }
+#drop:focus-within { outline: 3px solid var(--btn); outline-offset: 3px; }
+#drop svg { grid-row: span 2; width: 46px; height: 56px; color: var(--ink); }
+#drop .big { font-weight: 600; font-size: 19px; }
+#drop small { color: var(--ink-soft); font-size: 14.5px; }
+#file { position: absolute; width: 1px; height: 1px; opacity: 0; }
+#fileinfo { margin: 0; color: var(--ink-soft); font-size: 15px; }
+
+.row { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; }
+label[for="size"] { color: var(--ink-soft); font-size: 15px; }
+select {
+  font: inherit; font-size: 16px; color: var(--ink); background: transparent; border: 0; border-bottom: 2px solid var(--ink);
+  padding: 6px 4px; border-radius: 0;
+}
+details summary { cursor: pointer; color: var(--btn); font-weight: 500; width: fit-content; }
+:root[data-theme="dark"] details summary { color: var(--marker); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) details summary { color: var(--marker); } }
+details p { color: var(--ink-soft); font-size: 15px; margin: 8px 0; }
+details code { font-family: var(--mono); font-size: 13.5px; background: var(--marker); color: #1d2350; padding: 0 5px; border-radius: 3px; }
+textarea {
+  width: 100%; min-height: 300px; font: 14.5px/1.55 var(--mono); color: var(--ink); resize: vertical;
+  background: color-mix(in srgb, var(--paper) 90%, transparent); border: 1.5px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  border-radius: 8px; padding: 12px;
+}
+
+/* progreso: una línea que se va escribiendo */
+.progress { width: 100%; max-width: 420px; height: 18px; display: block; overflow: visible; }
+.progress path { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+.progress .track { stroke: color-mix(in srgb, var(--ink) 15%, transparent); }
+.progress .bar { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .25s ease; }
+#status { margin: 0; min-height: 1.5em; font-size: 15px; }
+#status[data-kind="ok"] { color: var(--ok); }
+#status[data-kind="error"] { color: var(--err); }
+#status[data-kind="busy"] { color: var(--ink-soft); }
+body.unlocked #status, body.unlocked #fileinfo { font-family: var(--hand); font-size: 19px; letter-spacing: .01em; }
+
+/* vista previa: el folio aparece sobre la mesa */
+#previewWrap { margin: 6px 0 0; }
+#previewWrap canvas {
+  width: 100%; height: auto; display: block; background: #fff; border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 18px 40px -18px rgba(20, 27, 77, .45);
+  transform: rotate(-.8deg); animation: drop-in .7s cubic-bezier(.2,.8,.2,1.1) both;
+}
+@keyframes drop-in { from { opacity: 0; transform: translateY(-18px) rotate(-4deg) scale(.97); } }
+#previewWrap figcaption { color: var(--ink-soft); font-size: 14px; margin-top: 10px; }
+footer { color: var(--ink-soft); font-size: 13.5px; }
+
+@media (max-width: 520px) {
+  main { padding: 30px 16px 60px 40px; gap: 28px; }
+  body::before { left: 20px; }
+  #drop { grid-template-columns: 1fr; text-align: left; }
+  #drop svg { grid-row: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition: none !important; }
+  #title-svg .g { stroke-dashoffset: 0; fill-opacity: 1; stroke-width: 0; }
+}
+</style>
+</head>
+<body>
+<canvas id="dust" aria-hidden="true"></canvas>
+<main>
+  <header>
+    <h1 class="title-wrap" style="margin:0">
+      <span class="swipe" aria-hidden="true"></span>
+      %%TITLE%%
+    </h1>
+    <p class="lede">Sube un PDF de apuntes y te lo devuelvo escrito con tu letra, en negro y listo para subrayar.</p>
+  </header>
+
+  <section id="lock" aria-labelledby="sl">
+    <p class="lock-title" id="sl">Solo para Elena</p>
+    <form id="lockform">
+      <input id="pw" type="password" autocomplete="current-password" placeholder="contraseña" aria-label="Contraseña">
+      <button type="submit" id="enter">Entrar</button>
+    </form>
+    <label class="check"><input type="checkbox" id="remember" checked> Recordarla en este iPad</label>
+    <p id="lockmsg" role="status"></p>
+  </section>
+
+  <section id="step1" aria-labelledby="s1" hidden>
+    <h2 class="step" id="s1"><span class="badge">%%RING%%%%D1%%</span> Elige el PDF</h2>
+    <label id="drop" for="file">
+      <svg viewBox="0 0 46 56" aria-hidden="true"><path d="M4 3h26l12 12v38H4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M30 3v12h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 27h22M11 34h24M11 41h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <span class="big">Toca aquí para elegir un PDF</span>
+      <small>o arrástralo encima. Vale cualquiera: Wuolah, diapositivas, apuntes de clase… y también escaneos o fotos, que tardan un poco más.</small>
+      <input id="file" type="file" accept="application/pdf,.pdf">
+    </label>
+    <p id="fileinfo"></p>
+  </section>
+
+  <section id="step2" aria-labelledby="s2" hidden>
+    <h2 class="step" id="s2"><span class="badge">%%RING%%%%D2%%</span> Pásalo a tu letra</h2>
+    <div class="row">
+      <label for="size">Tamaño de letra</label>
+      <select id="size">
+        <option value="s">Pequeña (cabe más por hoja)</option>
+        <option value="m" selected>Normal</option>
+        <option value="l">Grande</option>
+      </select>
+    </div>
+    <details>
+      <summary>Revisar o cortar el texto antes (opcional)</summary>
+      <p>Borra lo que no quieras o corrige lo que haga falta. <code># </code> es el título del tema, <code>## </code> un apartado (sale subrayado), <code>- </code> un punto de lista; dos espacios delante lo meten un nivel.</p>
+      <textarea id="text" spellcheck="false" aria-label="Texto de los apuntes"></textarea>
+    </details>
+    <div class="row"><button id="go" type="button">Descargar en mi letra</button></div>
+    <svg class="progress" id="progress" viewBox="0 0 420 18" preserveAspectRatio="none" aria-hidden="true" hidden>
+      <path class="track" d="M2 10 C 40 4, 70 15, 110 9 S 180 4, 220 10 S 300 15, 340 8 S 400 6, 418 10"/>
+      <path class="bar" pathLength="1" d="M2 10 C 40 4, 70 15, 110 9 S 180 4, 220 10 S 300 15, 340 8 S 400 6, 418 10"/>
+    </svg>
+    <p id="status" role="status"></p>
+    <figure id="previewWrap" hidden>
+      <canvas id="preview" aria-label="Vista previa de la primera página"></canvas>
+      <figcaption>Primera página de lo que se ha descargado.</figcaption>
+    </figure>
+  </section>
+
+  <footer>Todo pasa dentro de este dispositivo: el PDF no se sube a ningún sitio.</footer>
+</main>
+
+<script src="vendor/pdf.min.js"></script>
+<script id="pdfjs-worker" src="vendor/pdf.worker.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/fontkit.umd.min.js"></script>
+<script src="vendor/tesseract/tesseract.min.js"></script>
+<script src="letra.enc.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // longitud de cada trazo del título para la animación de escritura
+  document.querySelectorAll("#title-svg .g").forEach((p) => p.style.setProperty("--len", Math.ceil(p.getTotalLength())));
+
+  // ---------- partículas: polvo de goma y motas de fosforito ----------
+  const cv = $("dust"), ctx = cv.getContext("2d");
+  let W = 0, H = 0, dpr = 1, parts = [], pointer = { x: -999, y: -999 };
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  let colors = [];
+  function palette() { colors = [css("--ink"), css("--marker"), css("--margin")]; }
+  function resize() {
+    dpr = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.min(70, Math.round((W * H) / 16000));
+    while (parts.length < n) parts.push(spawn(Math.random() * H));
+    parts.length = n;
+  }
+  function spawn(y) {
+    const k = Math.random();
+    return { x: Math.random() * W, y, vx: (Math.random() - .5) * .15, vy: -(.08 + Math.random() * .22),
+      r: k < .7 ? .8 + Math.random() * 1.4 : 1.8 + Math.random() * 2.2, c: k < .55 ? 0 : k < .9 ? 1 : 2,
+      a: .18 + Math.random() * .35, w: Math.random() * Math.PI * 2, burst: 0 };
+  }
+  function burst(x, y) {
+    for (let i = 0; i < 46; i++) {
+      const ang = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 5;
+      parts.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 2.5, r: 1.5 + Math.random() * 3,
+        c: Math.random() < .6 ? 1 : 0, a: .9, w: 0, burst: 1, life: 1 });
+    }
+  }
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i];
+      if (p.burst) {
+        p.vy += .12; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.life -= .012;
+        if (p.life <= 0) { parts.splice(i, 1); continue; }
+      } else {
+        p.w += .01; p.x += p.vx + Math.sin(p.w) * .12; p.y += p.vy;
+        const dx = p.x - pointer.x, dy = p.y - pointer.y, d2 = dx * dx + dy * dy;
+        if (d2 < 8100) { const f = (8100 - d2) / 8100 * 1.6; const d = Math.sqrt(d2) || 1; p.x += dx / d * f; p.y += dy / d * f; }
+        if (p.y < -10) Object.assign(p, spawn(H + 10));
+        if (p.x < -10) p.x = W + 10; else if (p.x > W + 10) p.x = -10;
+      }
+      ctx.globalAlpha = p.burst ? p.a * p.life : p.a;
+      ctx.fillStyle = colors[p.c];
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (!document.hidden) requestAnimationFrame(tick);
+  }
+  if (!reduce) {
+    palette(); resize(); requestAnimationFrame(tick);
+    addEventListener("resize", resize);
+    addEventListener("pointermove", (e) => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
+    addEventListener("pointerleave", () => { pointer.x = pointer.y = -999; });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) requestAnimationFrame(tick); });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", palette);
+  }
+
+  // ---------- progreso y celebración ----------
+  const bar = document.querySelector("#progress .bar");
+  document.addEventListener("letra:progress", (e) => { $("progress").hidden = false; bar.style.strokeDashoffset = String(1 - e.detail); });
+  document.addEventListener("letra:done", () => {
+    setTimeout(() => { $("progress").hidden = true; bar.style.strokeDashoffset = "1"; }, 900);
+    if (reduce) return;
+    const r = $("go").getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2);
+  });
+  document.addEventListener("letra:loaded", () => { $("step2").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); });
+
+  // ---------- contraseña ----------
+  const b = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  async function decrypt(pw) {
+    const E = window.LETRA_ENC;
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b(E.salt), iterations: E.iter, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b(E.iv) }, key, b(E.data));
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+  async function open(pw, save) {
+    try {
+      const { font, pua } = await decrypt(pw);
+      window.__letraUnlock(font, pua);
+      const st = document.createElement("style");
+      st.textContent = '@font-face{font-family:"Letra";src:url("data:font/ttf;base64,' + font + '") format("truetype")}';
+      document.head.appendChild(st);
+      if (save) { try { localStorage.setItem("letra-pw", pw); } catch (e) {} }
+      document.body.classList.add("unlocked");
+      $("lock").hidden = true; $("step1").hidden = false;
+      return true;
+    } catch (e) { return false; }
+  }
+  addEventListener("load", async () => {
+    let saved = null; try { saved = localStorage.getItem("letra-pw"); } catch (e) {}
+    if (saved && await open(saved, false)) return;
+    $("lockform").addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      $("enter").disabled = true; $("lockmsg").textContent = "";
+      const ok = await open($("pw").value, $("remember").checked);
+      if (!ok) {
+        $("lockmsg").textContent = "Esa no es. Prueba otra vez.";
+        $("lockform").classList.remove("shake"); void $("lockform").offsetWidth; $("lockform").classList.add("shake");
+        $("enter").disabled = false; $("pw").select();
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

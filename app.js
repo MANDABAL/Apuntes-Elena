@@ -207,7 +207,7 @@
     return blocks;
   }
 
-  async function markupToPdf(md, sizePt) {
+  async function markupToPdf(md, sizePt, onProgress) {
     const { PDFDocument, rgb, degrees } = PDFLib;
     const doc = await PDFDocument.create();
     doc.registerFontkit(fontkit);
@@ -245,6 +245,7 @@
     const blocks = parseMarkup(md);
     for (let bi = 0; bi < blocks.length; bi++) {
       const b = blocks[bi];
+      if (bi % 20 === 0) { onProgress && onProgress(bi / blocks.length); await new Promise((r) => setTimeout(r, 0)); }
       const size = b.kind === "h1" ? sizePt * 1.35 : b.kind === "h2" ? sizePt * 1.18 : sizePt;
       const lh = size * 1.72;
       const before = b.kind === "h1" ? 4 : b.kind === "h2" ? sizePt * 0.9 : sizePt * 0.12;
@@ -302,6 +303,7 @@
       const ocr = pdfToMarkup.ocrPages ? ` · ${pdfToMarkup.ocrPages} páginas leídas con OCR (revisa el texto por si hay algún error)` : "";
       $("fileinfo").textContent = `${file.name} · ${words(md).toLocaleString("es-ES")} palabras${ocr}`;
       $("step2").hidden = false;
+      document.dispatchEvent(new CustomEvent("letra:loaded"));
       status("Texto listo. Puedes revisarlo o pasarlo directamente a tu letra.", "ok");
     } catch (e) {
       console.error(e);
@@ -317,7 +319,10 @@
     status("Escribiendo en tu letra…", "busy");
     try {
       const sizes = { s: 12.5, m: 14, l: 15.5 };
-      const res = await markupToPdf(md, sizes[$("size").value]);
+      const fire = (name, detail) => document.dispatchEvent(new CustomEvent(name, { detail }));
+      fire("letra:progress", 0);
+      const res = await markupToPdf(md, sizes[$("size").value], (f) => fire("letra:progress", f * 0.95));
+      fire("letra:progress", 1);
       const name = `${sourceName} (mi letra).pdf`;
       await preview(res.bytes);
       let saved = false;
@@ -332,7 +337,8 @@
       }
       let msg = `Hecho: ${res.pages} páginas.`;
       if (res.missing.length) msg += ` Caracteres que no están en tu letra y se han quitado: ${res.missing.join(" ")}`;
-      status(saved ? msg : msg, "ok");
+      status(msg, "ok");
+      document.dispatchEvent(new CustomEvent("letra:done"));
     } catch (e) {
       console.error(e); status("Algo ha fallado al crear el PDF: " + e.message, "error");
     }

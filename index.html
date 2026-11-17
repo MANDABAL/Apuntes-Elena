@@ -3,114 +3,225 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f8f4">
 <title>Apuntes en mi letra</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* Una sola columna, como una hoja: paso 1 arriba, paso 2 y la vista previa debajo. */
-  --paper: #f6f7fb;
-  --sheet: #ffffff;
-  --ink: #23233a;
-  --muted: #6a6a82;
-  --line: #dcdcea;
-  --accent: #6a3fb0;
-  --accent-ink: #ffffff;
-  --mark: #f6f27a;
-  --ok: #1f7a4d;
-  --err: #b3261e;
-  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --hand: "Letra", "Figtree", cursive;
+  /* Una hoja de cuaderno de cuadrícula: margen rojo a la izquierda, tinta azul oscura, fosforito amarillo. */
+  --paper: #f7f8f4;
+  --grid: rgba(70, 120, 190, .13);
+  --margin: rgba(214, 72, 72, .45);
+  --ink: #1d2350;
+  --ink-soft: #5a6086;
+  --marker: #f4e94a;
+  --btn: #24307a;
+  --btn-ink: #ffffff;
+  --btn-edge: #141b4d;
+  --err: #b8322a;
+  --ok: #1f6d4a;
+  --body: "Familjen Grotesk", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --hand: "Letra", var(--body);
+  --cell: 22px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #17161f; --sheet: #211f2c; --ink: #ecebf5; --muted: #a3a1b8; --line: #3a3850;
-    --accent: #b69af0; --accent-ink: #1a1526; --mark: #8a8420; --ok: #6fd3a0; --err: #ff8a80; color-scheme: dark;
+    --paper: #12162a; --grid: rgba(140, 170, 255, .08); --margin: rgba(255, 110, 110, .35);
+    --ink: #e9ecf8; --ink-soft: #a2a8c8; --marker: #c9b92a; --btn: #f4e94a; --btn-ink: #12162a; --btn-edge: #a69a1c;
+    --err: #ff8a80; --ok: #7fdcae; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #17161f; --sheet: #211f2c; --ink: #ecebf5; --muted: #a3a1b8; --line: #3a3850;
-  --accent: #b69af0; --accent-ink: #1a1526; --mark: #8a8420; --ok: #6fd3a0; --err: #ff8a80; color-scheme: dark;
+  --paper: #12162a; --grid: rgba(140, 170, 255, .08); --margin: rgba(255, 110, 110, .35);
+  --ink: #e9ecf8; --ink-soft: #a2a8c8; --marker: #c9b92a; --btn: #f4e94a; --btn-ink: #12162a; --btn-edge: #a69a1c;
+  --err: #ff8a80; --ok: #7fdcae; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { margin: 0; }
-body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.5; }
-main { max-width: 720px; margin: 0 auto; padding: 28px 18px 60px; display: grid; gap: 18px; }
-header h1 { font-family: var(--hand); font-weight: 400; font-size: 46px; line-height: 1.15; margin: 0;
-  text-wrap: balance; }
-header h1 span { background: linear-gradient(transparent 52%, var(--mark) 52%, var(--mark) 90%, transparent 90%); }
-header p { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
-.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 12px; }
-.step { display: flex; align-items: baseline; gap: 10px; font-weight: 600; font-size: 18px; margin: 0; }
-.step b { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
-  background: var(--accent); color: var(--accent-ink); font-size: 15px; flex: none; }
-#drop { display: grid; place-items: center; gap: 6px; text-align: center; padding: 26px 14px; border: 2px dashed var(--line);
-  border-radius: 12px; cursor: pointer; transition: border-color .15s, background .15s; }
-#drop.over, #drop:hover { border-color: var(--accent); }
-#drop .big { font-weight: 600; font-size: 18px; color: var(--accent); }
-#drop small { color: var(--muted); }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+#dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+main {
+  position: relative; z-index: 1; max-width: 700px; margin: 0 auto;
+  padding: 44px 22px 70px 58px; display: grid; gap: 34px;
+}
+/* doble línea roja del margen del cuaderno, de arriba abajo de la pantalla */
+body::before {
+  content: ""; position: fixed; top: 0; bottom: 0; left: max(34px, calc(50% - 316px)); width: 5px; z-index: 0; pointer-events: none;
+  border-left: 1.5px solid var(--margin); border-right: 1.5px solid var(--margin); opacity: .9;
+}
+
+/* ---------- título escrito a mano ---------- */
+header { display: grid; gap: 10px; }
+.title-wrap { position: relative; width: min(100%, 560px); }
+#title-svg { display: block; width: 100%; height: auto; overflow: visible; color: var(--ink); position: relative; z-index: 1; }
+#title-svg .g {
+  fill: currentColor; fill-opacity: 0; stroke: currentColor; stroke-width: 14; stroke-linejoin: round;
+  stroke-dasharray: var(--len, 4000); stroke-dashoffset: var(--len, 4000);
+  animation: write .75s cubic-bezier(.6,.1,.3,1) forwards, ink .35s ease-out forwards;
+  animation-delay: calc(var(--i) * 85ms + 150ms), calc(var(--i) * 85ms + 650ms);
+}
+@keyframes write { to { stroke-dashoffset: 0; } }
+@keyframes ink { to { fill-opacity: 1; stroke-width: 0; } }
+.swipe {
+  position: absolute; left: -2%; right: 2%; bottom: 4%; height: 42%; z-index: 0;
+  background: var(--marker); border-radius: 3px 10px 4px 12px / 8px 4px 10px 5px; transform-origin: left center;
+  transform: rotate(-1.2deg) scaleX(0); opacity: .9; animation: swipe .55s cubic-bezier(.7,0,.2,1) forwards 1.9s;
+}
+@keyframes swipe { to { transform: rotate(-1.2deg) scaleX(1); } }
+.lede { margin: 0; max-width: 46ch; color: var(--ink-soft); font-size: 18px; opacity: 0; animation: rise .6s ease forwards 2.2s; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- secciones (sin tarjetas: escritas sobre la hoja) ---------- */
+section { display: grid; gap: 14px; animation: rise .6s ease both; }
+#lock { animation-delay: 2.35s; }
+.step { display: flex; align-items: center; gap: 12px; margin: 0; font-weight: 600; font-size: 21px; letter-spacing: -.01em; }
+.badge { position: relative; width: 46px; height: 46px; flex: none; color: var(--ink); }
+.badge .num { position: absolute; inset: 9px 12px; width: calc(100% - 24px); height: calc(100% - 18px); }
+.badge .num path { fill: currentColor; }
+.badge .ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.badge .ring path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 160; stroke-dashoffset: 160; }
+section:not([hidden]) .badge .ring path { animation: ring .7s ease forwards .25s; }
+@keyframes ring { to { stroke-dashoffset: 0; } }
+.lock-title { font-size: 15px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
+
+/* contraseña: se escribe sobre una línea, como en el cuaderno */
+#lockform { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; }
+#pw {
+  flex: 1 1 240px; min-width: 0; font: inherit; font-size: 22px; color: var(--ink); background: transparent;
+  border: 0; border-bottom: 2px solid var(--ink); padding: 6px 2px; border-radius: 0; letter-spacing: .06em;
+}
+#pw::placeholder { color: var(--ink-soft); opacity: .6; letter-spacing: 0; font-size: 18px; }
+#pw:focus { outline: none; border-bottom-color: var(--btn); box-shadow: 0 6px 0 -3px var(--marker); }
+.check { display: flex; gap: 8px; align-items: center; color: var(--ink-soft); font-size: 15px; }
+.check input { width: 18px; height: 18px; accent-color: var(--btn); }
+#lockmsg { margin: 0; color: var(--err); min-height: 1.4em; font-size: 15px; }
+.shake { animation: shake .35s ease; }
+@keyframes shake { 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
+
+/* botones con tacto de tecla */
+button {
+  font: inherit; font-weight: 600; font-size: 18px; letter-spacing: .01em; cursor: pointer;
+  color: var(--btn-ink); background: var(--btn); border: 0; border-radius: 14px; padding: 13px 24px;
+  box-shadow: 0 4px 0 var(--btn-edge); transform: translateY(0); transition: transform .12s, box-shadow .12s, opacity .2s;
+}
+button:hover { transform: translateY(-1px) rotate(-.6deg); box-shadow: 0 5px 0 var(--btn-edge); }
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--btn-edge); }
+button:disabled { opacity: .6; cursor: progress; transform: none; }
+:focus-visible { outline: 3px solid var(--btn); outline-offset: 3px; }
+
+/* zona para soltar el PDF: un folio con la esquina doblada */
+#drop {
+  position: relative; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center;
+  padding: 22px 22px 22px 20px; cursor: pointer; background: color-mix(in srgb, var(--paper) 82%, transparent);
+  border: 2px dashed color-mix(in srgb, var(--ink) 45%, transparent); border-radius: 6px 18px 6px 6px;
+  transition: transform .2s cubic-bezier(.3,.7,.3,1.4), border-color .2s, box-shadow .2s;
+}
+#drop:hover, #drop.over { transform: translateY(-3px) rotate(-.4deg); border-color: var(--ink); box-shadow: 0 10px 24px -14px rgba(20, 27, 77, .45); }
+#drop:focus-within { outline: 3px solid var(--btn); outline-offset: 3px; }
+#drop svg { grid-row: span 2; width: 46px; height: 56px; color: var(--ink); }
+#drop .big { font-weight: 600; font-size: 19px; }
+#drop small { color: var(--ink-soft); font-size: 14.5px; }
 #file { position: absolute; width: 1px; height: 1px; opacity: 0; }
-#drop:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
-#fileinfo { color: var(--muted); font-size: 15px; margin: 0; }
-.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-label { font-size: 15px; color: var(--muted); }
-select { font: inherit; font-size: 16px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); }
-button { font: inherit; font-weight: 600; font-size: 18px; padding: 13px 22px; border-radius: 12px; border: 0;
-  background: var(--accent); color: var(--accent-ink); cursor: pointer; }
-button:disabled { opacity: .55; cursor: progress; }
-button:focus-visible, select:focus-visible, summary:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-details summary { cursor: pointer; color: var(--accent); font-weight: 500; }
-details p { color: var(--muted); font-size: 15px; margin: 8px 0; }
-details code { background: var(--paper); padding: 1px 5px; border-radius: 5px; font-size: 14px; }
-textarea { width: 100%; min-height: 320px; font: 15px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: var(--ink);
-  background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 12px; resize: vertical; }
-#pw { font: inherit; font-size: 17px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
-  background: var(--paper); color: var(--ink); flex: 1 1 220px; min-width: 0; }
-#pw:focus-visible, .check input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.check { display: flex; gap: 8px; align-items: center; }
-#lockmsg { margin: 0; font-size: 15px; color: var(--err); min-height: 1.4em; }
-#status { margin: 0; font-size: 15px; min-height: 1.5em; }
+#fileinfo { margin: 0; color: var(--ink-soft); font-size: 15px; }
+
+.row { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; }
+label[for="size"] { color: var(--ink-soft); font-size: 15px; }
+select {
+  font: inherit; font-size: 16px; color: var(--ink); background: transparent; border: 0; border-bottom: 2px solid var(--ink);
+  padding: 6px 4px; border-radius: 0;
+}
+details summary { cursor: pointer; color: var(--btn); font-weight: 500; width: fit-content; }
+:root[data-theme="dark"] details summary { color: var(--marker); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) details summary { color: var(--marker); } }
+details p { color: var(--ink-soft); font-size: 15px; margin: 8px 0; }
+details code { font-family: var(--mono); font-size: 13.5px; background: var(--marker); color: #1d2350; padding: 0 5px; border-radius: 3px; }
+textarea {
+  width: 100%; min-height: 300px; font: 14.5px/1.55 var(--mono); color: var(--ink); resize: vertical;
+  background: color-mix(in srgb, var(--paper) 90%, transparent); border: 1.5px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  border-radius: 8px; padding: 12px;
+}
+
+/* progreso: una línea que se va escribiendo */
+.progress { width: 100%; max-width: 420px; height: 18px; display: block; overflow: visible; }
+.progress path { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+.progress .track { stroke: color-mix(in srgb, var(--ink) 15%, transparent); }
+.progress .bar { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .25s ease; }
+#status { margin: 0; min-height: 1.5em; font-size: 15px; }
 #status[data-kind="ok"] { color: var(--ok); }
 #status[data-kind="error"] { color: var(--err); }
-#status[data-kind="busy"] { color: var(--muted); }
-#previewWrap { margin: 0; }
-#previewWrap canvas { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: 0 1px 10px rgba(0,0,0,.12); background: #fff; }
-#previewWrap figcaption { color: var(--muted); font-size: 14px; margin-top: 6px; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+#status[data-kind="busy"] { color: var(--ink-soft); }
+body.unlocked #status, body.unlocked #fileinfo { font-family: var(--hand); font-size: 19px; letter-spacing: .01em; }
+
+/* vista previa: el folio aparece sobre la mesa */
+#previewWrap { margin: 6px 0 0; }
+#previewWrap canvas {
+  width: 100%; height: auto; display: block; background: #fff; border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 18px 40px -18px rgba(20, 27, 77, .45);
+  transform: rotate(-.8deg); animation: drop-in .7s cubic-bezier(.2,.8,.2,1.1) both;
+}
+@keyframes drop-in { from { opacity: 0; transform: translateY(-18px) rotate(-4deg) scale(.97); } }
+#previewWrap figcaption { color: var(--ink-soft); font-size: 14px; margin-top: 10px; }
+footer { color: var(--ink-soft); font-size: 13.5px; }
+
+@media (max-width: 520px) {
+  main { padding: 30px 16px 60px 40px; gap: 28px; }
+  body::before { left: 20px; }
+  #drop { grid-template-columns: 1fr; text-align: left; }
+  #drop svg { grid-row: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition: none !important; }
+  #title-svg .g { stroke-dashoffset: 0; fill-opacity: 1; stroke-width: 0; }
+}
 </style>
 </head>
 <body>
+<canvas id="dust" aria-hidden="true"></canvas>
 <main>
   <header>
-    <h1><span>Apuntes en mi letra</span></h1>
-    <p>Sube un PDF de apuntes y descárgalo escrito con tu letra, en negro y listo para subrayar.</p>
+    <h1 class="title-wrap" style="margin:0">
+      <span class="swipe" aria-hidden="true"></span>
+      <svg id="title-svg" viewBox="-40 -800 11186 1150" role="img" aria-label="Apuntes en mi letra"><g transform="scale(1,-1)"><path class="g" style="--i:0" transform="translate(0 1) rotate(-0.2)" d="M58 18Q79 7 91.5 12.5Q104 18 114.0 48.0Q124 78 135 139Q140 165 144.0 184.0Q148 203 149 204Q157 212 197.5 217.5Q238 223 293 224Q331 225 351.5 225.0Q372 225 381.5 220.0Q391 215 395.0 203.0Q399 191 404 169Q409 145 414.5 134.0Q420 123 432 110Q449 91 467.5 86.0Q486 81 498.5 89.0Q511 97 511 117Q511 128 507.0 135.0Q503 142 490 153L469 170V225Q469 262 467.5 272.5Q466 283 458 290Q447 303 440 331Q429 380 406.5 434.0Q384 488 356.5 533.0Q329 578 304 601Q267 635 227.0 631.5Q187 628 166 589Q157 573 151.5 568.0Q146 563 133 561Q115 558 107.0 550.5Q99 543 96.5 521.0Q94 499 94 452Q94 418 92.5 385.5Q91 353 89 341Q88 329 82.0 291.5Q76 254 70 213Q63 173 57.5 138.5Q52 104 50 96Q48 88 46.5 74.5Q45 61 45 50Q45 33 47.0 28.0Q49 23 58 18ZM278 292Q250 291 225.5 289.5Q201 288 196 287Q182 283 174.5 292.5Q167 302 170 321Q172 332 177.0 359.5Q182 387 188.0 419.5Q194 452 199.5 479.0Q205 506 207 516Q216 554 247 554Q255 554 262.0 548.0Q269 542 282 523Q303 494 322.5 454.0Q342 414 355.0 377.0Q368 340 368 321Q368 308 365.0 302.5Q362 297 343.5 295.5Q325 294 278 292Z"/><path class="g" style="--i:1" transform="translate(551 -1) rotate(2.1)" d="M375 -288Q413 -323 451 -285Q463 -273 464.5 -267.5Q466 -262 463 -249Q460 -236 455.0 -231.0Q450 -226 433 -219Q417 -212 408.5 -207.0Q400 -202 394.5 -192.0Q389 -182 381 -161Q376 -147 371.0 -135.5Q366 -124 364 -122Q362 -120 357.0 -108.5Q352 -97 347 -83Q341 -69 336.0 -57.0Q331 -45 329 -44Q320 -35 325.0 -28.0Q330 -21 348 -19Q387 -14 412.5 -6.0Q438 2 457.0 16.0Q476 30 495 53Q512 74 517.5 95.5Q523 117 522 163Q522 199 514.5 225.0Q507 251 490.5 275.0Q474 299 444 327Q407 362 373.5 378.0Q340 394 299 395Q282 396 262.0 394.5Q242 393 232 391Q202 385 169.0 367.0Q136 349 108.5 325.5Q81 302 64 276Q51 257 48.0 247.0Q45 237 45 214Q45 175 64.0 146.0Q83 117 110 115Q124 114 128.5 110.0Q133 106 141 86Q152 55 165.5 39.0Q179 23 207 5Q223 -5 231.0 -11.0Q239 -17 246.0 -28.0Q253 -39 264.0 -64.0Q275 -89 296 -137Q317 -186 329.5 -213.5Q342 -241 349.0 -254.5Q356 -268 361.5 -274.5Q367 -281 375 -288ZM416 70Q408 63 401.5 60.0Q395 57 383.5 55.5Q372 54 348 53Q318 52 304.0 54.5Q290 57 281.0 71.5Q272 86 256 121Q247 140 235.0 161.5Q223 183 215 193Q202 211 195.5 215.0Q189 219 174 219Q159 219 154.5 216.5Q150 214 143 200Q133 181 128.5 179.0Q124 177 117 192Q108 210 115.5 228.0Q123 246 148 270Q183 302 208.5 313.5Q234 325 276 326Q299 327 310.0 326.5Q321 326 329.0 323.5Q337 321 349 314Q366 305 384.5 289.0Q403 273 419.0 255.5Q435 238 442 224Q450 211 452.0 198.0Q454 185 454 157Q454 132 451.5 118.0Q449 104 441.0 94.0Q433 84 416 70ZM165 147Q168 139 163.5 134.5Q159 130 153 137Q148 144 155 150Q161 155 165 147Z"/><path class="g" style="--i:2" transform="translate(1116 2) rotate(0.0)" d="M623 11Q647 7 663.0 7.0Q679 7 702 11Q720 16 726.5 20.0Q733 24 737 35Q745 54 744.0 60.0Q743 66 732 73Q719 82 670 83Q648 84 636.0 85.5Q624 87 614.5 91.0Q605 95 590 104Q572 115 560.5 124.0Q549 133 539.0 146.0Q529 159 515 180Q505 195 500.5 205.0Q496 215 493.5 233.0Q491 251 488 288Q483 351 475.0 376.5Q467 402 450 415L434 426L414 415Q406 410 399.0 403.5Q392 397 390 392Q387 382 387.0 360.5Q387 339 390.5 316.0Q394 293 399 275Q421 205 397 154Q377 113 354.0 99.0Q331 85 288 88Q256 90 234.5 100.0Q213 110 186 135Q167 153 152.5 182.0Q138 211 130.5 242.5Q123 274 123.5 301.5Q124 329 135 343Q145 356 143.0 368.0Q141 380 122 411Q108 434 99.0 439.5Q90 445 73 438Q54 431 47.5 407.5Q41 384 45 329Q57 99 204 30Q221 23 231.5 19.5Q242 16 257.0 15.0Q272 14 299 14Q327 14 341.0 15.0Q355 16 363.5 19.0Q372 22 384 29Q395 35 411.0 49.5Q427 64 439 77L469 110L499 80Q523 56 558.5 36.5Q594 17 623 11Z"/><path class="g" style="--i:3" transform="translate(1899 0) rotate(-1.6)" d="M525 9Q533 5 538.0 6.0Q543 7 556 13Q566 18 568.5 23.5Q571 29 571 42Q571 50 569.0 60.5Q567 71 564 77Q560 84 556.0 98.5Q552 113 550 127Q544 161 528.5 201.5Q513 242 491.5 282.5Q470 323 446.5 357.0Q423 391 400 411Q372 437 352.5 444.5Q333 452 302 450Q282 449 271.5 445.5Q261 442 249 432Q228 415 211.0 384.5Q194 354 186 321Q183 306 178.5 287.5Q174 269 172 258L166 232L156 257Q152 268 146.0 280.0Q140 292 135 298Q128 308 126.5 318.5Q125 329 126 354Q127 385 125.0 391.5Q123 398 110 405Q98 413 93.5 413.0Q89 413 80 406Q65 397 55.5 379.0Q46 361 46 344Q46 336 56.0 300.0Q66 264 80 222Q94 180 105.0 143.5Q116 107 117 98Q122 70 128.0 55.5Q134 41 146 30Q169 7 187.0 29.5Q205 52 219 123Q230 177 240.0 225.0Q250 273 258.5 305.5Q267 338 271 345Q274 351 281.5 359.0Q289 367 296 371L314 382L333 370Q354 357 377.5 327.0Q401 297 422.5 257.5Q444 218 459.5 176.0Q475 134 481 98Q486 67 499.0 40.5Q512 14 525 9Z"/><path class="g" style="--i:4" transform="translate(2516 6) rotate(0.6)" d="M244 10Q258 7 280.0 6.0Q302 5 325.5 6.0Q349 7 366 10Q395 15 425.5 30.5Q456 46 482.0 66.5Q508 87 524.0 108.5Q540 130 540 148Q540 159 536.5 165.5Q533 172 522 181L504 196L489 186Q483 182 476.0 174.0Q469 166 465 158Q461 151 457.5 143.0Q454 135 452 132Q449 125 432.5 113.5Q416 102 396.5 92.0Q377 82 364 79Q314 69 274.0 76.5Q234 84 217 107Q205 124 198.5 135.5Q192 147 189.0 162.0Q186 177 185.0 201.0Q184 225 183 266Q182 314 182.5 340.0Q183 366 187.0 377.0Q191 388 202.0 390.0Q213 392 232 392Q257 392 264.0 394.5Q271 397 283 409Q299 424 299.0 430.0Q299 436 285 448Q275 456 266.0 458.5Q257 461 234 461Q219 461 207.5 462.5Q196 464 194 466Q193 468 194.5 483.5Q196 499 200 519Q205 547 207.0 582.0Q209 617 208.5 645.0Q208 673 204 677Q195 685 177.0 687.5Q159 690 151 683Q140 673 133.0 651.5Q126 630 124.5 604.5Q123 579 128 557Q132 542 132.0 531.0Q132 520 128 503Q124 480 113.5 470.5Q103 461 80 457Q61 455 50 444Q43 437 42.5 432.0Q42 427 46 414Q51 401 55.0 397.5Q59 394 75 392Q98 390 105 383Q108 380 110.5 353.5Q113 327 114 268Q115 228 115.5 204.5Q116 181 117.5 168.0Q119 155 122.5 145.0Q126 135 132 121Q139 105 147.5 89.0Q156 73 161 67Q170 56 185.5 43.5Q201 31 217.0 22.0Q233 13 244 10Z"/><path class="g" style="--i:5" transform="translate(3101 -4) rotate(-2.0)" d="M287 7Q299 5 327.5 6.0Q356 7 388.0 10.5Q420 14 439 18Q484 28 521.5 45.0Q559 62 579.5 80.0Q600 98 593 110Q592 114 585.5 119.0Q579 124 573 127Q562 132 555.0 130.5Q548 129 521 115Q478 93 433.5 82.0Q389 71 337 71Q301 71 285.0 73.0Q269 75 250 81Q225 90 198.5 108.0Q172 126 155 145Q141 162 131.0 188.0Q121 214 119.0 237.5Q117 261 125 270Q129 275 134.0 277.0Q139 279 152.5 279.0Q166 279 195 277Q224 276 250.5 276.5Q277 277 294 279Q344 286 377.0 307.5Q410 329 421.5 359.5Q433 390 417 423Q408 442 381.5 467.0Q355 492 326 510Q310 520 301.5 523.5Q293 527 282.0 528.0Q271 529 248 529Q221 529 208.5 527.0Q196 525 186 520Q126 488 88 422Q81 409 71.5 395.5Q62 382 55 375L39 358L46 328Q49 315 51.0 297.0Q53 279 53 266Q55 163 117 95Q177 29 287 7ZM319 348Q312 346 290.5 344.0Q269 342 241.5 341.0Q214 340 190.5 340.5Q167 341 157 343Q140 345 134 354Q130 360 137.0 376.5Q144 393 157.0 411.5Q170 430 185 443Q201 457 209.5 461.0Q218 465 236 466Q265 468 286.0 459.0Q307 450 335 423Q347 411 356.0 401.5Q365 392 365 390Q365 386 356.5 376.5Q348 367 337.5 359.0Q327 351 319 348Z"/><path class="g" style="--i:6" transform="translate(3739 6) rotate(-2.0)" d="M305 12Q318 9 343.5 7.5Q369 6 399.5 5.5Q430 5 458.0 6.0Q486 7 504 10Q540 15 570.5 30.5Q601 46 614 67Q648 117 604.0 164.0Q560 211 451 243Q419 253 415.0 256.0Q411 259 419 267Q425 273 431.5 290.5Q438 308 443.0 329.5Q448 351 450.5 371.5Q453 392 451 404Q444 450 402.5 474.0Q361 498 299 494Q264 492 237.0 482.5Q210 473 167 450Q41 381 89 305Q98 290 112.5 278.5Q127 267 153.0 257.0Q179 247 222.0 235.5Q265 224 331 209Q365 201 402.0 189.5Q439 178 471.5 165.0Q504 152 525.5 141.0Q547 130 549 123Q552 116 542.5 101.0Q533 86 523 81Q510 75 410 75H310L268 93Q251 101 235.5 106.5Q220 112 216 112Q205 112 191.0 104.0Q177 96 177 89Q177 79 187.0 65.5Q197 52 208 47Q231 36 257.5 26.5Q284 17 305 12ZM362 277Q358 274 355.0 273.0Q352 272 342.0 274.0Q332 276 306.0 282.5Q280 289 229 302Q188 313 174.0 320.5Q160 328 154 344L148 360L181 381Q243 420 294.0 427.0Q345 434 375 406Q384 398 385.0 385.5Q386 373 378 345Q371 319 371 300Q371 282 362 277Z"/><path class="g" style="--i:7" transform="translate(4707 -9) rotate(1.0)" d="M306 10Q328 7 359.5 6.0Q391 5 422.5 7.0Q454 9 475 12Q493 15 519.0 23.0Q545 31 566 40Q600 54 609.5 60.5Q619 67 626 80L637 100L623 113L609 127L574 114Q537 100 515.0 92.0Q493 84 478.0 80.5Q463 77 447.0 76.0Q431 75 405 74Q377 73 350.5 74.0Q324 75 311 77Q271 85 232.0 109.5Q193 134 164.0 168.5Q135 203 123 241Q114 273 124.0 281.5Q134 290 174 285Q269 273 336.0 288.0Q403 303 433 343Q485 409 385 461Q361 473 340.5 480.0Q320 487 297.0 491.0Q274 495 241 496Q178 499 143.0 484.0Q108 469 80 427Q64 403 58.0 383.5Q52 364 50 326Q41 192 134 102Q215 22 306 10ZM345 358Q335 353 306.0 350.5Q277 348 243.0 349.0Q209 350 180.0 353.0Q151 356 140 362Q133 366 132.5 369.5Q132 373 137 386Q149 414 174.0 423.5Q199 433 253 429Q272 428 293.0 423.0Q314 418 331.0 412.5Q348 407 353 402Q355 400 356.5 394.0Q358 388 359 381Q359 371 356.5 367.0Q354 363 345 358Z"/><path class="g" style="--i:8" transform="translate(5376 9) rotate(2.4)" d="M498 22Q510 14 514.5 13.5Q519 13 526 18Q537 24 543 34Q546 40 544.5 58.0Q543 76 538.0 98.5Q533 121 526 140Q522 152 516.5 167.0Q511 182 507 189Q504 197 495.5 222.0Q487 247 478 275Q455 347 435.5 387.5Q416 428 392 454Q359 489 323.0 498.5Q287 508 240 493Q222 488 201.0 473.0Q180 458 161.5 439.5Q143 421 132 403Q127 394 123.0 387.0Q119 380 118 379Q116 377 102 388Q89 397 73.5 395.5Q58 394 47 383Q42 377 41.0 367.0Q40 357 41 327Q42 308 45.5 283.5Q49 259 53 244Q57 229 62.0 208.5Q67 188 70 173Q79 135 96.5 99.0Q114 63 131 49Q149 33 165.5 35.0Q182 37 189 54Q195 68 193.0 82.0Q191 96 180 129Q173 151 168.5 187.5Q164 224 164.0 261.0Q164 298 169 321Q174 347 190.5 371.0Q207 395 229.5 412.5Q252 430 274 433Q304 438 327.5 423.0Q351 408 372.0 367.0Q393 326 416 254Q425 226 434.5 198.5Q444 171 448 160Q461 129 470.5 95.0Q480 61 480 49Q480 35 498 22Z"/><path class="g" style="--i:9" transform="translate(6293 2) rotate(0.8)" d="M179 18Q196 7 209.0 13.0Q222 19 226 38Q228 49 225.0 71.5Q222 94 215.5 120.0Q209 146 200 169Q193 189 190.5 205.0Q188 221 188 252Q188 282 190.0 300.0Q192 318 197.5 332.0Q203 346 214 362Q237 397 267.0 406.5Q297 416 324 397Q335 390 351.0 373.0Q367 356 382.5 336.5Q398 317 407 301Q414 290 417.0 280.0Q420 270 421.0 249.5Q422 229 423 184Q424 143 425.5 122.5Q427 102 429.0 94.0Q431 86 435 81Q444 71 462.5 70.0Q481 69 490 79Q507 98 511.0 133.5Q515 169 507 224L501 266L521 304Q550 360 582 360Q599 360 617.0 336.0Q635 312 650.5 275.0Q666 238 673.5 198.0Q681 158 677 126Q673 94 677.5 85.0Q682 76 702 74Q736 70 750.5 92.0Q765 114 754 154Q752 162 748.0 179.5Q744 197 741 213Q731 259 714.0 300.5Q697 342 677.0 372.5Q657 403 636 415Q620 426 590.5 429.0Q561 432 541 425Q533 423 521.0 414.0Q509 405 499 395Q474 368 459.0 370.0Q444 372 413 406Q364 463 322.0 475.5Q280 488 225 463Q169 437 142 377L132 354L122 365Q104 384 73 377Q57 373 49.5 355.0Q42 337 46 313Q52 275 80 265Q90 262 95.5 256.0Q101 250 106.5 234.5Q112 219 120 185Q142 99 154.5 62.5Q167 26 179 18Z"/><path class="g" style="--i:10" transform="translate(7093 -10) rotate(-1.7)" d="M245 14Q250 13 267.0 12.0Q284 11 302 11Q323 12 334.5 13.0Q346 14 358.0 19.0Q370 24 390 34Q474 78 495 134Q504 157 502.0 166.0Q500 175 483 188Q477 193 472.0 192.0Q467 191 454.0 178.0Q441 165 410 132Q388 108 356.0 92.5Q324 77 295 78Q268 78 253.5 85.5Q239 93 216 116Q194 139 175.5 170.5Q157 202 139 248Q119 298 114.5 333.0Q110 368 118 402L127 436L116 446Q106 455 97.0 455.5Q88 456 74 448Q58 440 51.5 421.0Q45 402 45 364Q45 339 47.0 320.5Q49 302 55.0 281.5Q61 261 73 230Q107 141 151.5 85.5Q196 30 245 14ZM109 623Q128 610 133.5 609.5Q139 609 152 621Q166 632 166.5 639.5Q167 647 153 666Q141 683 130.5 686.0Q120 689 102 682Q94 679 91.5 674.5Q89 670 89 657Q89 644 92.5 638.5Q96 633 109 623Z"/><path class="g" style="--i:11" transform="translate(7974 -9) rotate(0.1)" d="M360 10Q408 3 470.5 15.5Q533 28 606 57Q654 77 671.0 97.5Q688 118 675 142Q668 156 658.5 156.5Q649 157 628 145Q599 129 561.0 113.5Q523 98 486.0 88.0Q449 78 422 75Q383 72 345.0 83.0Q307 94 276.5 117.5Q246 141 229 172Q222 185 222.0 189.5Q222 194 228 203Q232 209 244.5 217.5Q257 226 273 233Q329 259 366.0 295.0Q403 331 415 371Q456 503 345 556Q325 565 314.0 567.5Q303 570 283 568Q243 564 209.0 540.5Q175 517 152 475Q139 453 133.5 425.5Q128 398 124 343L121 282L104 283Q87 284 71.0 279.0Q55 274 47 265Q41 258 41.5 254.0Q42 250 50 238Q60 225 75.0 215.5Q90 206 103 206Q134 206 157 161Q192 95 234 62Q249 51 271.0 40.0Q293 29 317.0 21.0Q341 13 360 10ZM313 338Q305 330 288.0 318.5Q271 307 255 299Q227 285 220.5 283.5Q214 282 206 289Q198 296 196.0 305.0Q194 314 195 349Q195 393 200.5 416.0Q206 439 221 459Q246 493 279.5 498.0Q313 503 340 477Q355 464 357.0 457.5Q359 451 357 428Q353 375 313 338Z"/><path class="g" style="--i:12" transform="translate(8701 -5) rotate(-1.5)" d="M244 17Q263 13 293.0 11.0Q323 9 356.5 9.5Q390 10 418.0 12.5Q446 15 460 19Q520 39 536 76Q544 93 544.0 97.0Q544 101 538 109Q525 129 515.0 127.0Q505 125 478 98Q462 82 434.0 76.0Q406 70 347 70Q259 70 208.5 92.5Q158 115 123 170Q109 192 106.0 219.0Q103 246 113 255Q119 260 124.5 260.5Q130 261 149 256Q181 249 220.5 250.0Q260 251 287 259Q312 267 342.0 285.0Q372 303 391 323Q400 332 408.5 349.0Q417 366 423.0 383.5Q429 401 429 413Q429 431 420.5 454.0Q412 477 398 492Q369 525 331.0 539.0Q293 553 237 551Q203 550 178.0 541.0Q153 532 131.5 511.0Q110 490 85 453Q75 439 66.0 425.5Q57 412 54 407Q51 403 49.0 394.0Q47 385 46.5 362.0Q46 339 46 293Q46 250 46.5 226.0Q47 202 50.0 187.5Q53 173 59.0 161.0Q65 149 77 131Q103 90 148.0 59.0Q193 28 244 17ZM272 318Q239 308 198.5 310.0Q158 312 134 325Q122 332 119.0 336.5Q116 341 115 354Q114 372 125.5 397.5Q137 423 155.0 446.0Q173 469 190 478Q216 492 249.0 492.0Q282 492 311.5 480.5Q341 469 356 447Q367 431 367.5 416.5Q368 402 357 381Q348 363 323.0 344.5Q298 326 272 318Z"/><path class="g" style="--i:13" transform="translate(9287 -1) rotate(-2.3)" d="M315 10Q342 8 354.0 7.0Q366 6 375.0 7.0Q384 8 400 10Q436 16 466.5 32.0Q497 48 509 68Q523 89 523.5 105.5Q524 122 513 129Q497 140 486.0 137.0Q475 134 454 112Q438 95 428.5 89.0Q419 83 402 79Q321 62 263 99Q245 111 227.5 131.5Q210 152 202.0 171.0Q194 190 202 195Q204 197 233.5 199.5Q263 202 301 204Q355 207 380.5 210.5Q406 214 413.5 221.0Q421 228 421 242Q421 257 414.5 263.0Q408 269 380.5 270.0Q353 271 288 270L172 269L165 285Q161 292 157.0 310.0Q153 328 151 346Q147 377 147.5 387.0Q148 397 155 410Q166 431 160.0 449.0Q154 467 138.0 474.5Q122 482 102 471Q85 461 80.0 424.5Q75 388 85 331Q90 301 91.0 287.0Q92 273 89.0 265.5Q86 258 77 247Q46 213 92 197Q106 192 113.5 183.0Q121 174 140 142Q164 99 188.0 74.0Q212 49 246 31Q266 21 281.0 16.5Q296 12 315 10Z"/><path class="g" style="--i:14" transform="translate(9833 7) rotate(-0.3)" d="M248 13Q266 6 273.0 6.5Q280 7 292 17Q309 31 307.0 54.5Q305 78 283 122Q199 292 272 364Q301 393 340.0 399.5Q379 406 422 391L455 380L471 391Q486 402 486.0 410.5Q486 419 472 436Q456 457 429.0 465.0Q402 473 358 471Q315 469 285.5 456.5Q256 444 223 414Q179 373 171 323Q170 319 164.0 327.5Q158 336 150.5 350.0Q143 364 137.0 377.0Q131 390 131 396Q131 403 123.0 416.5Q115 430 105.5 441.0Q96 452 91 452Q63 452 53.5 433.5Q44 415 56 384Q78 330 99.5 277.5Q121 225 148 160Q173 102 200.5 62.0Q228 22 248 13Z"/><path class="g" style="--i:15" transform="translate(10360 3) rotate(0.1)" d="M205 12Q223 8 247.5 7.5Q272 7 295.5 10.0Q319 13 332 18Q353 26 379.0 49.0Q405 72 430 105Q453 134 458.5 138.0Q464 142 471 135Q488 120 520.5 104.0Q553 88 605 70Q639 59 654.5 54.0Q670 49 676.5 49.5Q683 50 689 54Q700 62 701.5 81.0Q703 100 692 109Q689 112 670.0 120.0Q651 128 627.5 137.5Q604 147 585.5 153.5Q567 160 563 160Q559 160 543.0 171.0Q527 182 512.0 195.0Q497 208 493 213Q487 225 487 305Q487 351 483.5 376.5Q480 402 471.5 417.5Q463 433 446 448Q430 462 415.0 463.0Q400 464 373 451Q361 445 353.5 445.5Q346 446 321 455Q301 462 283.0 464.5Q265 467 239 467Q218 467 206.0 466.0Q194 465 184.0 461.5Q174 458 157 450Q126 434 105.5 412.0Q85 390 66 353L48 318V240V162L65 129Q88 84 125.5 53.0Q163 22 205 12ZM302 84Q275 74 240.0 79.0Q205 84 179 100Q146 122 131.5 155.0Q117 188 117 240Q117 293 132.5 326.5Q148 360 184 383Q201 394 210.5 396.0Q220 398 247 396Q268 395 284.0 391.5Q300 388 316 380Q348 366 356.5 357.0Q365 348 365 328Q365 309 371.0 287.0Q377 265 390 236L403 206L386 172Q372 144 346.5 118.0Q321 92 302 84Z"/></g></svg>
+    </h1>
+    <p class="lede">Sube un PDF de apuntes y te lo devuelvo escrito con tu letra, en negro y listo para subrayar.</p>
   </header>
 
-  <section class="card" id="lock" aria-labelledby="sl">
-    <h2 class="step" id="sl">Contraseña</h2>
-    <form id="lockform" class="row">
-      <input id="pw" type="password" autocomplete="current-password" placeholder="Escribe la contraseña" aria-label="Contraseña">
+  <section id="lock" aria-labelledby="sl">
+    <p class="lock-title" id="sl">Solo para Elena</p>
+    <form id="lockform">
+      <input id="pw" type="password" autocomplete="current-password" placeholder="contraseña" aria-label="Contraseña">
       <button type="submit" id="enter">Entrar</button>
     </form>
-    <label class="check"><input type="checkbox" id="remember" checked> Recordarla en este dispositivo</label>
+    <label class="check"><input type="checkbox" id="remember" checked> Recordarla en este iPad</label>
     <p id="lockmsg" role="status"></p>
   </section>
 
-  <section class="card" aria-labelledby="s1" id="step1" hidden>
-    <h2 class="step" id="s1"><b>1</b> Elige el PDF</h2>
+  <section id="step1" aria-labelledby="s1" hidden>
+    <h2 class="step" id="s1"><span class="badge"><svg class="ring" viewBox="0 0 46 46" aria-hidden="true"><path pathLength="160" d="M24 3.5 C 36 3, 44.5 12, 43 24 S 33 44, 21.5 42.8 S 2.5 33, 4 21 S 15 3.5, 28.5 5.5"/></svg><svg class="num" viewBox="-60 -700 523 820" aria-hidden="true"><g transform="scale(1,-1)"><path class="d" style="--i:0" transform="translate(0 3) rotate(-0.0)" d="M298 16Q321 3 339.0 9.0Q357 15 360 37Q361 49 358.5 54.5Q356 60 345 67Q338 72 331.5 80.0Q325 88 322 93Q308 121 298.5 202.5Q289 284 286 402L283 532L266 543L250 554L236 544Q228 538 221.5 526.5Q215 515 207 487Q188 429 161.0 378.5Q134 328 90 268Q77 251 66.0 232.5Q55 214 52 205Q47 190 47.5 185.5Q48 181 58 171Q70 157 79 157Q86 157 101.0 172.0Q116 187 134 212Q141 222 149.0 233.5Q157 245 161 252Q166 258 173.5 266.5Q181 275 187 279Q193 284 199.5 294.0Q206 304 208 311L215 331L218 314Q219 307 223.0 276.0Q227 245 231 208Q238 147 246.5 108.5Q255 70 267.5 49.0Q280 28 298 16Z"/></g></svg></span> Elige el PDF</h2>
     <label id="drop" for="file">
+      <svg viewBox="0 0 46 56" aria-hidden="true"><path d="M4 3h26l12 12v38H4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M30 3v12h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 27h22M11 34h24M11 41h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       <span class="big">Toca aquí para elegir un PDF</span>
-      <small>o arrástralo encima. Vale cualquier PDF: Wuolah, apuntes de clase, diapositivas, y también escaneos o fotos (esos tardan un poco más).</small>
+      <small>o arrástralo encima. Vale cualquiera: Wuolah, diapositivas, apuntes de clase… y también escaneos o fotos, que tardan un poco más.</small>
       <input id="file" type="file" accept="application/pdf,.pdf">
     </label>
     <p id="fileinfo"></p>
   </section>
 
-  <section class="card" id="step2" aria-labelledby="s2" hidden>
-    <h2 class="step" id="s2"><b>2</b> Pásalo a tu letra</h2>
+  <section id="step2" aria-labelledby="s2" hidden>
+    <h2 class="step" id="s2"><span class="badge"><svg class="ring" viewBox="0 0 46 46" aria-hidden="true"><path pathLength="160" d="M24 3.5 C 36 3, 44.5 12, 43 24 S 33 44, 21.5 42.8 S 2.5 33, 4 21 S 15 3.5, 28.5 5.5"/></svg><svg class="num" viewBox="-60 -700 675 820" aria-hidden="true"><g transform="scale(1,-1)"><path class="d" style="--i:0" transform="translate(0 -4) rotate(-0.2)" d="M189 9Q209 6 243.5 6.0Q278 6 317.5 8.0Q357 10 394.5 13.5Q432 17 459.0 22.0Q486 27 495 32Q506 40 508.5 52.0Q511 64 503 76Q498 84 489.5 86.5Q481 89 459.5 87.5Q438 86 394 80Q365 76 330.5 74.5Q296 73 264.5 73.5Q233 74 211.0 77.0Q189 80 185 84Q181 89 183.5 95.5Q186 102 202.5 120.0Q219 138 256 176Q323 244 358.5 289.0Q394 334 407.0 368.0Q420 402 416 436Q406 529 312 561Q270 575 223.5 574.0Q177 573 136.5 561.0Q96 549 70.5 528.0Q45 507 45 480Q45 461 64.0 443.5Q83 426 103 428Q116 429 120.0 433.0Q124 437 131 456Q139 476 147.5 486.0Q156 496 172.5 499.5Q189 503 219 504Q243 505 255.0 504.5Q267 504 276.5 501.5Q286 499 300 492Q320 484 327.0 477.5Q334 471 340 459Q353 431 346.5 403.5Q340 376 308.0 335.0Q276 294 209 226Q165 181 143.0 154.5Q121 128 114.5 111.0Q108 94 110 75Q113 54 129 36Q142 23 152.0 18.5Q162 14 189 9Z"/></g></svg></span> Pásalo a tu letra</h2>
     <div class="row">
       <label for="size">Tamaño de letra</label>
       <select id="size">
@@ -121,28 +232,106 @@ textarea { width: 100%; min-height: 320px; font: 15px/1.5 ui-monospace, "SF Mono
     </div>
     <details>
       <summary>Revisar o cortar el texto antes (opcional)</summary>
-      <p>Puedes borrar lo que no quieras o corregir cosas. <code># </code> es el título del tema, <code>## </code> un apartado (sale subrayado), <code>- </code> un punto de lista y dos espacios delante lo meten un nivel.</p>
+      <p>Borra lo que no quieras o corrige lo que haga falta. <code># </code> es el título del tema, <code>## </code> un apartado (sale subrayado), <code>- </code> un punto de lista; dos espacios delante lo meten un nivel.</p>
       <textarea id="text" spellcheck="false" aria-label="Texto de los apuntes"></textarea>
     </details>
     <div class="row"><button id="go" type="button">Descargar en mi letra</button></div>
+    <svg class="progress" id="progress" viewBox="0 0 420 18" preserveAspectRatio="none" aria-hidden="true" hidden>
+      <path class="track" d="M2 10 C 40 4, 70 15, 110 9 S 180 4, 220 10 S 300 15, 340 8 S 400 6, 418 10"/>
+      <path class="bar" pathLength="1" d="M2 10 C 40 4, 70 15, 110 9 S 180 4, 220 10 S 300 15, 340 8 S 400 6, 418 10"/>
+    </svg>
     <p id="status" role="status"></p>
     <figure id="previewWrap" hidden>
       <canvas id="preview" aria-label="Vista previa de la primera página"></canvas>
-      <figcaption>Primera página del PDF descargado.</figcaption>
+      <figcaption>Primera página de lo que se ha descargado.</figcaption>
     </figure>
   </section>
+
+  <footer>Todo pasa dentro de este dispositivo: el PDF no se sube a ningún sitio.</footer>
 </main>
+
 <script src="vendor/pdf.min.js"></script>
 <script id="pdfjs-worker" src="vendor/pdf.worker.min.js"></script>
 <script src="vendor/pdf-lib.min.js"></script>
 <script src="vendor/fontkit.umd.min.js"></script>
 <script src="vendor/tesseract/tesseract.min.js"></script>
 <script src="letra.enc.js"></script>
-
 <script src="app.js"></script>
 <script>
 (function () {
   const $ = (id) => document.getElementById(id);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // longitud de cada trazo del título para la animación de escritura
+  document.querySelectorAll("#title-svg .g").forEach((p) => p.style.setProperty("--len", Math.ceil(p.getTotalLength())));
+
+  // ---------- partículas: polvo de goma y motas de fosforito ----------
+  const cv = $("dust"), ctx = cv.getContext("2d");
+  let W = 0, H = 0, dpr = 1, parts = [], pointer = { x: -999, y: -999 };
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  let colors = [];
+  function palette() { colors = [css("--ink"), css("--marker"), css("--margin")]; }
+  function resize() {
+    dpr = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.min(70, Math.round((W * H) / 16000));
+    while (parts.length < n) parts.push(spawn(Math.random() * H));
+    parts.length = n;
+  }
+  function spawn(y) {
+    const k = Math.random();
+    return { x: Math.random() * W, y, vx: (Math.random() - .5) * .15, vy: -(.08 + Math.random() * .22),
+      r: k < .7 ? .8 + Math.random() * 1.4 : 1.8 + Math.random() * 2.2, c: k < .55 ? 0 : k < .9 ? 1 : 2,
+      a: .18 + Math.random() * .35, w: Math.random() * Math.PI * 2, burst: 0 };
+  }
+  function burst(x, y) {
+    for (let i = 0; i < 46; i++) {
+      const ang = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 5;
+      parts.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 2.5, r: 1.5 + Math.random() * 3,
+        c: Math.random() < .6 ? 1 : 0, a: .9, w: 0, burst: 1, life: 1 });
+    }
+  }
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i];
+      if (p.burst) {
+        p.vy += .12; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.life -= .012;
+        if (p.life <= 0) { parts.splice(i, 1); continue; }
+      } else {
+        p.w += .01; p.x += p.vx + Math.sin(p.w) * .12; p.y += p.vy;
+        const dx = p.x - pointer.x, dy = p.y - pointer.y, d2 = dx * dx + dy * dy;
+        if (d2 < 8100) { const f = (8100 - d2) / 8100 * 1.6; const d = Math.sqrt(d2) || 1; p.x += dx / d * f; p.y += dy / d * f; }
+        if (p.y < -10) Object.assign(p, spawn(H + 10));
+        if (p.x < -10) p.x = W + 10; else if (p.x > W + 10) p.x = -10;
+      }
+      ctx.globalAlpha = p.burst ? p.a * p.life : p.a;
+      ctx.fillStyle = colors[p.c];
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (!document.hidden) requestAnimationFrame(tick);
+  }
+  if (!reduce) {
+    palette(); resize(); requestAnimationFrame(tick);
+    addEventListener("resize", resize);
+    addEventListener("pointermove", (e) => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
+    addEventListener("pointerleave", () => { pointer.x = pointer.y = -999; });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) requestAnimationFrame(tick); });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", palette);
+  }
+
+  // ---------- progreso y celebración ----------
+  const bar = document.querySelector("#progress .bar");
+  document.addEventListener("letra:progress", (e) => { $("progress").hidden = false; bar.style.strokeDashoffset = String(1 - e.detail); });
+  document.addEventListener("letra:done", () => {
+    setTimeout(() => { $("progress").hidden = true; bar.style.strokeDashoffset = "1"; }, 900);
+    if (reduce) return;
+    const r = $("go").getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2);
+  });
+  document.addEventListener("letra:loaded", () => { $("step2").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); });
+
+  // ---------- contraseña ----------
   const b = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
   async function decrypt(pw) {
     const E = window.LETRA_ENC;
@@ -160,20 +349,24 @@ textarea { width: 100%; min-height: 320px; font: 15px/1.5 ui-monospace, "SF Mono
       st.textContent = '@font-face{font-family:"Letra";src:url("data:font/ttf;base64,' + font + '") format("truetype")}';
       document.head.appendChild(st);
       if (save) { try { localStorage.setItem("letra-pw", pw); } catch (e) {} }
+      document.body.classList.add("unlocked");
       $("lock").hidden = true; $("step1").hidden = false;
       return true;
     } catch (e) { return false; }
   }
-  window.addEventListener("load", async () => {
+  addEventListener("load", async () => {
     let saved = null; try { saved = localStorage.getItem("letra-pw"); } catch (e) {}
     if (saved && await open(saved, false)) return;
     $("lockform").addEventListener("submit", async (ev) => {
       ev.preventDefault();
       $("enter").disabled = true; $("lockmsg").textContent = "";
       const ok = await open($("pw").value, $("remember").checked);
-      if (!ok) { $("lockmsg").textContent = "Contraseña incorrecta."; $("enter").disabled = false; $("pw").select(); }
+      if (!ok) {
+        $("lockmsg").textContent = "Esa no es. Prueba otra vez.";
+        $("lockform").classList.remove("shake"); void $("lockform").offsetWidth; $("lockform").classList.add("shake");
+        $("enter").disabled = false; $("pw").select();
+      }
     });
-    $("pw").focus();
   });
 })();
 </script>
