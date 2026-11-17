@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apuntes en mi letra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Una sola columna, como una hoja: paso 1 arriba, paso 2 y la vista previa debajo. */
+  --paper: #f6f7fb;
+  --sheet: #ffffff;
+  --ink: #23233a;
+  --muted: #6a6a82;
+  --line: #dcdcea;
+  --accent: #6a3fb0;
+  --accent-ink: #ffffff;
+  --mark: #f6f27a;
+  --ok: #1f7a4d;
+  --err: #b3261e;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --hand: "Letra", "Figtree", cursive;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #17161f; --sheet: #211f2c; --ink: #ecebf5; --muted: #a3a1b8; --line: #3a3850;
+    --accent: #b69af0; --accent-ink: #1a1526; --mark: #8a8420; --ok: #6fd3a0; --err: #ff8a80; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #17161f; --sheet: #211f2c; --ink: #ecebf5; --muted: #a3a1b8; --line: #3a3850;
+  --accent: #b69af0; --accent-ink: #1a1526; --mark: #8a8420; --ok: #6fd3a0; --err: #ff8a80; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.5; }
+main { max-width: 720px; margin: 0 auto; padding: 28px 18px 60px; display: grid; gap: 18px; }
+header h1 { font-family: var(--hand); font-weight: 400; font-size: 46px; line-height: 1.15; margin: 0;
+  text-wrap: balance; }
+header h1 span { background: linear-gradient(transparent 52%, var(--mark) 52%, var(--mark) 90%, transparent 90%); }
+header p { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 12px; }
+.step { display: flex; align-items: baseline; gap: 10px; font-weight: 600; font-size: 18px; margin: 0; }
+.step b { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); font-size: 15px; flex: none; }
+#drop { display: grid; place-items: center; gap: 6px; text-align: center; padding: 26px 14px; border: 2px dashed var(--line);
+  border-radius: 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+#drop.over, #drop:hover { border-color: var(--accent); }
+#drop .big { font-weight: 600; font-size: 18px; color: var(--accent); }
+#drop small { color: var(--muted); }
+#file { position: absolute; width: 1px; height: 1px; opacity: 0; }
+#drop:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+#fileinfo { color: var(--muted); font-size: 15px; margin: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+label { font-size: 15px; color: var(--muted); }
+select { font: inherit; font-size: 16px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); }
+button { font: inherit; font-weight: 600; font-size: 18px; padding: 13px 22px; border-radius: 12px; border: 0;
+  background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+button:disabled { opacity: .55; cursor: progress; }
+button:focus-visible, select:focus-visible, summary:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+details summary { cursor: pointer; color: var(--accent); font-weight: 500; }
+details p { color: var(--muted); font-size: 15px; margin: 8px 0; }
+details code { background: var(--paper); padding: 1px 5px; border-radius: 5px; font-size: 14px; }
+textarea { width: 100%; min-height: 320px; font: 15px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 12px; resize: vertical; }
+#pw { font: inherit; font-size: 17px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--paper); color: var(--ink); flex: 1 1 220px; min-width: 0; }
+#pw:focus-visible, .check input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.check { display: flex; gap: 8px; align-items: center; }
+#lockmsg { margin: 0; font-size: 15px; color: var(--err); min-height: 1.4em; }
+#status { margin: 0; font-size: 15px; min-height: 1.5em; }
+#status[data-kind="ok"] { color: var(--ok); }
+#status[data-kind="error"] { color: var(--err); }
+#status[data-kind="busy"] { color: var(--muted); }
+#previewWrap { margin: 0; }
+#previewWrap canvas { width: 100%; height: auto; display: block; border-radius: 6px; box-shadow: 0 1px 10px rgba(0,0,0,.12); background: #fff; }
+#previewWrap figcaption { color: var(--muted); font-size: 14px; margin-top: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1><span>Apuntes en mi letra</span></h1>
+    <p>Sube un PDF de apuntes y descárgalo escrito con tu letra, en negro y listo para subrayar.</p>
+  </header>
+
+  <section class="card" id="lock" aria-labelledby="sl">
+    <h2 class="step" id="sl">Contraseña</h2>
+    <form id="lockform" class="row">
+      <input id="pw" type="password" autocomplete="current-password" placeholder="Escribe la contraseña" aria-label="Contraseña">
+      <button type="submit" id="enter">Entrar</button>
+    </form>
+    <label class="check"><input type="checkbox" id="remember" checked> Recordarla en este dispositivo</label>
+    <p id="lockmsg" role="status"></p>
+  </section>
+
+  <section class="card" aria-labelledby="s1" id="step1" hidden>
+    <h2 class="step" id="s1"><b>1</b> Elige el PDF</h2>
+    <label id="drop" for="file">
+      <span class="big">Toca aquí para elegir un PDF</span>
+      <small>o arrástralo encima. Vale cualquier PDF: Wuolah, apuntes de clase, diapositivas, y también escaneos o fotos (esos tardan un poco más).</small>
+      <input id="file" type="file" accept="application/pdf,.pdf">
+    </label>
+    <p id="fileinfo"></p>
+  </section>
+
+  <section class="card" id="step2" aria-labelledby="s2" hidden>
+    <h2 class="step" id="s2"><b>2</b> Pásalo a tu letra</h2>
+    <div class="row">
+      <label for="size">Tamaño de letra</label>
+      <select id="size">
+        <option value="s">Pequeña (cabe más por hoja)</option>
+        <option value="m" selected>Normal</option>
+        <option value="l">Grande</option>
+      </select>
+    </div>
+    <details>
+      <summary>Revisar o cortar el texto antes (opcional)</summary>
+      <p>Puedes borrar lo que no quieras o corregir cosas. <code># </code> es el título del tema, <code>## </code> un apartado (sale subrayado), <code>- </code> un punto de lista y dos espacios delante lo meten un nivel.</p>
+      <textarea id="text" spellcheck="false" aria-label="Texto de los apuntes"></textarea>
+    </details>
+    <div class="row"><button id="go" type="button">Descargar en mi letra</button></div>
+    <p id="status" role="status"></p>
+    <figure id="previewWrap" hidden>
+      <canvas id="preview" aria-label="Vista previa de la primera página"></canvas>
+      <figcaption>Primera página del PDF descargado.</figcaption>
+    </figure>
+  </section>
+</main>
+<script src="vendor/pdf.min.js"></script>
+<script id="pdfjs-worker" src="vendor/pdf.worker.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/fontkit.umd.min.js"></script>
+<script src="vendor/tesseract/tesseract.min.js"></script>
+<script src="letra.enc.js"></script>
+
+<script src="app.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const b = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  async function decrypt(pw) {
+    const E = window.LETRA_ENC;
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b(E.salt), iterations: E.iter, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b(E.iv) }, key, b(E.data));
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+  async function open(pw, save) {
+    try {
+      const { font, pua } = await decrypt(pw);
+      window.__letraUnlock(font, pua);
+      const st = document.createElement("style");
+      st.textContent = '@font-face{font-family:"Letra";src:url("data:font/ttf;base64,' + font + '") format("truetype")}';
+      document.head.appendChild(st);
+      if (save) { try { localStorage.setItem("letra-pw", pw); } catch (e) {} }
+      $("lock").hidden = true; $("step1").hidden = false;
+      return true;
+    } catch (e) { return false; }
+  }
+  window.addEventListener("load", async () => {
+    let saved = null; try { saved = localStorage.getItem("letra-pw"); } catch (e) {}
+    if (saved && await open(saved, false)) return;
+    $("lockform").addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      $("enter").disabled = true; $("lockmsg").textContent = "";
+      const ok = await open($("pw").value, $("remember").checked);
+      if (!ok) { $("lockmsg").textContent = "Contraseña incorrecta."; $("enter").disabled = false; $("pw").select(); }
+    });
+    $("pw").focus();
+  });
+})();
+</script>
+</body>
+</html>
